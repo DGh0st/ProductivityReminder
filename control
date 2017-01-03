@@ -1,0 +1,9 @@
+Package: com.dgh0st.productivityreminder
+Name: ProductivityReminder
+Depends: mobilesubstrate, preferenceloader, applist
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Get an alert to be reminded to get back to work.
+Maintainer: DGh0st <deeppwnage@yahoo.com>
+Author: DGh0st <deeppwnage@yahoo.com>
+Section: Tweaks

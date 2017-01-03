@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>isEnabled</string>
+			<key>label</key>
+			<string>Enable</string>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Alert Message</string>
+			<key>footerText</key>
+			<string>Set the message displayed in the alert.
+[app] will be replaced with the application's name.
+[min] will be replaced with the minutes selected for the application.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>alertMessage</string>
+			<key>default</key>
+			<string>You've been on [app] for [min] minutes. Are you sure you couldn't be using your time better?</string>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>save</string>
+			<key>action</key>
+			<string>save</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Button Message</string>
+			<key>footerText</key>
+			<string>Set the message displayed in the alert button.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>buttonMessage</string>
+			<key>default</key>
+			<string>Thanks for the suggestion</string>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>save</string>
+			<key>action</key>
+			<string>save</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Per Applicaiton Settings</string>
+			<key>footerText</key>
+			<string>Settings to setup time usage per application.</string>
+		</dict>
+		<dict>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>Specifics</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/com.dgh0st.productivityreminder.plist</string>
+			<key>ALSettingsDefaultValue</key>
+			<string></string>
+			<key>ALSettingsKeyPrefix</key>
+			<string></string>
+			<key>ALAllowsSelection</key>
+			<true/>
+			<key>ALSectionDescriptors</key>
+			<array>
+				<dict>
+					<key>cell-class-name</key>
+					<string>ALDisclosureIndicatedCell</string>
+					<key>title</key>
+					<string>System Applications</string>
+					<key>predicate</key>
+					<string>(isSystemApplication = TRUE)</string>
+					<key>suppress-hidden-apps</key>
+					<string>1</string>
+					<key>icon-size</key>
+					<integer>29</integer>
+					<key>action</key>
+					<string>showPreferences</string>
+					<key>display-identifier-macro</key>
+					<string>@@DISPLAYIDENTIFIER@@</string>
+					<key>entry</key>
+					<dict>
+						<key>items</key>
+						<array>
+							<dict>
+								<key>cell</key>
+								<string>PSGroupCell</string>
+								<key>footerText</key>
+								<string>Set the amount of time (in minutes) after which alert is displayed. 0 means off.</string>
+							</dict>
+							<dict>
+								<key>cell</key>
+								<string>PSEditTextCell</string>
+								<key>defaults</key>
+								<string>com.dgh0st.productivityreminder</string>
+								<key>key</key>
+								<string>AlertDelay-@@DISPLAYIDENTIFIER@@</string>
+								<key>default</key>
+								<string>0</string>
+								<key>PostNotification</key>
+								<string>com.dgh0st.productivityreminder/settingschanged</string>
+							</dict>
+							<dict>
+								<key>cell</key>
+								<string>PSGroupCell</string>
+								<key>footerAlignment</key>
+								<integer>1</integer>
+								<key>footerText</key>
+								<string>ProductivityReminder © 2016 DGh0st</string>
+							</dict>
+						</array>
+					</dict>
+				</dict>
+				<dict>
+					<key>cell-class-name</key>
+					<string>ALDisclosureIndicatedCell</string>
+					<key>title</key>
+					<string>User Applications</string>
+					<key>predicate</key>
+					<string>(isSystemApplication = FALSE)</string>
+					<key>suppress-hidden-apps</key>
+					<string>1</string>
+					<key>icon-size</key>
+					<integer>29</integer>
+					<key>action</key>
+					<string>showPreferences</string>
+					<key>display-identifier-macro</key>
+					<string>@@DISPLAYIDENTIFIER@@</string>
+					<key>entry</key>
+					<dict>
+						<key>items</key>
+						<array>
+							<dict>
+								<key>cell</key>
+								<string>PSGroupCell</string>
+								<key>footerText</key>
+								<string>Set the amount of time (in minutes) after which alert is displayed. 0 means off.</string>
+							</dict>
+							<dict>
+								<key>cell</key>
+								<string>PSEditTextCell</string>
+								<key>defaults</key>
+								<string>com.dgh0st.productivityreminder</string>
+								<key>key</key>
+								<string>AlertDelay-@@DISPLAYIDENTIFIER@@</string>
+								<key>default</key>
+								<string>0</string>
+								<key>PostNotification</key>
+								<string>com.dgh0st.productivityreminder/settingschanged</string>
+							</dict>
+							<dict>
+								<key>cell</key>
+								<string>PSGroupCell</string>
+								<key>footerAlignment</key>
+								<integer>1</integer>
+								<key>footerText</key>
+								<string>ProductivityReminder © 2016 DGh0st</string>
+							</dict>
+						</array>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Credits</string>
+			<key>footerText</key>
+			<string>Enjoy the tweak :)</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>action</key>
+			<string>email</string>
+			<key>label</key>
+			<string>Email Support</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>action</key>
+			<string>donate</string>
+			<key>label</key>
+			<string>Donate</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>action</key>
+			<string>follow</string>
+			<key>label</key>
+			<string>Follow on twitter</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerAlignment</key>
+			<integer>1</integer>
+			<key>footerText</key>
+			<string>ProductivityReminder © 2016 DGh0st</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>ProductivityReminder</string>
+</dict>
+</plist>
