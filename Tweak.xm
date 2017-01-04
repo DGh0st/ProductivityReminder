@@ -89,13 +89,13 @@ BOOL shouldDisplayAlert = NO;
 
 		NSInteger timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60;
 		NSString *time = @"";
-		if (timeInSeconds / 60 >= 1) {
-			[time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
+		if (timeInSeconds / 60 > 0) {
+			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
 			if (timeInSeconds % 60 > 0) {
-				[time stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
+				time = [time stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
 			}
 		} else if (timeInSeconds % 60 > 0) {
-			[time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
+			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
 		}
 
 		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[app]" withString:appName];
