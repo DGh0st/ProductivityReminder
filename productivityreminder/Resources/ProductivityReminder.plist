@@ -30,7 +30,7 @@
 			<key>footerText</key>
 			<string>Set the message displayed in the alert.
 [app] will be replaced with the application's name.
-[min] will be replaced with the minutes selected for the application.</string>
+[min] will be replaced with the time selected for the application.</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -40,7 +40,7 @@
 			<key>key</key>
 			<string>alertMessage</string>
 			<key>default</key>
-			<string>You've been on [app] for [min] minutes. Are you sure you couldn't be using your time better?</string>
+			<string>You've been on [app] for [min]. Are you sure you couldn't be using your time better?</string>
 			<key>PostNotification</key>
 			<string>com.dgh0st.productivityreminder/settingschanged</string>
 		</dict>

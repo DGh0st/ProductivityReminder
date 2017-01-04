@@ -84,10 +84,22 @@ BOOL shouldDisplayAlert = NO;
 		shouldDisplayAlert = NO;
 
 		NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
-		NSString *alertMessage = stringValueForKey(kAlertMessage, @"You've been on [app] for [min] minutes. Are you sure you couldn't be using your time better?");
+		NSString *alertMessage = stringValueForKey(kAlertMessage, @"You've been on [app] for [min]. Are you sure you couldn't be using your time better?");
 		NSString *buttonMessage = stringValueForKey(kButtonMessage, @"Thanks for the suggestion");
+
+		NSInteger timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60;
+		NSString *time = @"";
+		if (timeInSeconds / 60 >= 1) {
+			[time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
+			if (timeInSeconds % 60 > 0) {
+				[time stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
+			}
+		} else if (timeInSeconds % 60 > 0) {
+			[time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
+		}
+
 		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[app]" withString:appName];
-		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:[NSString stringWithFormat:@"%f", doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f)]];
+		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
 
 		UIAlertController *alert = [%c(UIAlertController) alertControllerWithTitle:alertMessage message:nil preferredStyle:UIAlertControllerStyleAlert];
 
