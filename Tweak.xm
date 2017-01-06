@@ -7,6 +7,7 @@
 #define kAlertMessage @"alertMessage"
 #define kButtonMessage @"buttonMessage"
 #define kAlertDelayPrefix @"AlertDelay-"
+#define kAppEnabledPrefix @"AppEnabled-"
 
 NSDictionary *prefs = nil;
 
@@ -41,6 +42,20 @@ static CGFloat doubleValuePerApp(NSString *appId, NSString *prefix, CGFloat defa
 				NSString *tempId = [key substringFromIndex:[prefix length]];
 				if ([tempId isEqualToString:appId]) {
 					return [prefs objectForKey:key] ? [[prefs objectForKey:key] floatValue] : defaultValue;
+				}
+			}
+		}
+	}
+	return defaultValue;
+}
+
+static BOOL boolValuePerApp(NSString *appId, NSString *prefix, BOOL defaultValue) {
+	if (prefs) {
+		for (NSString *key in [prefs allKeys]) {
+			if ([key hasPrefix:prefix]) {
+				NSString *tempId = [key substringFromIndex:[prefix length]];
+				if ([tempId isEqualToString:appId]) {
+					return [prefs objectForKey:key] ? [[prefs objectForKey:key] boolValue] : defaultValue;
 				}
 			}
 		}
@@ -121,7 +136,7 @@ BOOL shouldDisplayAlert = NO;
 		if (args.count != 0) {
 			NSString *execPath = args[0];
 			if (execPath && [execPath rangeOfString:@"/Application"].location != NSNotFound) {
-				if (doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) != 0) {
+				if (boolValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAppEnabledPrefix, NO)) {
 					%init(applications);
 				}
 			}

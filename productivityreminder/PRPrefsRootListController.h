@@ -1,11 +1,7 @@
-#import <Preferences/PSListController.h>
-#import <Preferences/PSTableCell.h>
+#import <Preferences/Preferences.h>
 #import <MessageUI/MFMailComposeViewController.h>
-
-@interface PSTableCell (ProductivityReminder)
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier specifier:(PSSpecifier *)specifier;
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
-@end
+#import <AppList/AppList.h>
+#import <UIKit/UIKit.h>
 
 @interface PSListController (ProductivityReminder)
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion;
@@ -15,4 +11,17 @@
 
 @interface PRPrefsRootListController : PSListController <MFMailComposeViewControllerDelegate>
 
+@end
+
+@interface PRPrefsAppsController : PSViewController <UITableViewDelegate> {
+	UITableView *_tableView;
+	ALApplicationTableDataSource *_dataSource;
+}
+@end
+
+@interface PRPrefsPerAppController : PSListController {
+	NSString *_appName;
+	NSString *_displayIdentifier;
+}
+- (id)initWithAppName:(NSString *)appName displayIdentifier:(NSString *)displayIdentifier;
 @end

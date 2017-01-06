@@ -89,121 +89,14 @@
 			<string>Settings to setup time usage per application.</string>
 		</dict>
 		<dict>
-			<key>bundle</key>
-			<string>AppList</string>
 			<key>cell</key>
-			<string>PSLinkListCell</string>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Applications</string>
+			<key>detail</key>
+			<string>PRPrefsAppsController</string>
 			<key>isController</key>
 			<true/>
-			<key>label</key>
-			<string>Specifics</string>
-			<key>ALSettingsPath</key>
-			<string>/var/mobile/Library/Preferences/com.dgh0st.productivityreminder.plist</string>
-			<key>ALSettingsDefaultValue</key>
-			<string></string>
-			<key>ALSettingsKeyPrefix</key>
-			<string></string>
-			<key>ALAllowsSelection</key>
-			<true/>
-			<key>ALSectionDescriptors</key>
-			<array>
-				<dict>
-					<key>cell-class-name</key>
-					<string>ALDisclosureIndicatedCell</string>
-					<key>title</key>
-					<string>System Applications</string>
-					<key>predicate</key>
-					<string>(isSystemApplication = TRUE)</string>
-					<key>suppress-hidden-apps</key>
-					<string>1</string>
-					<key>icon-size</key>
-					<integer>29</integer>
-					<key>action</key>
-					<string>showPreferences</string>
-					<key>display-identifier-macro</key>
-					<string>@@DISPLAYIDENTIFIER@@</string>
-					<key>entry</key>
-					<dict>
-						<key>items</key>
-						<array>
-							<dict>
-								<key>cell</key>
-								<string>PSGroupCell</string>
-								<key>footerText</key>
-								<string>Set the amount of time (in minutes) after which alert is displayed. 0 means off.</string>
-							</dict>
-							<dict>
-								<key>cell</key>
-								<string>PSEditTextCell</string>
-								<key>defaults</key>
-								<string>com.dgh0st.productivityreminder</string>
-								<key>key</key>
-								<string>AlertDelay-@@DISPLAYIDENTIFIER@@</string>
-								<key>default</key>
-								<string>0</string>
-								<key>PostNotification</key>
-								<string>com.dgh0st.productivityreminder/settingschanged</string>
-							</dict>
-							<dict>
-								<key>cell</key>
-								<string>PSGroupCell</string>
-								<key>footerAlignment</key>
-								<integer>1</integer>
-								<key>footerText</key>
-								<string>ProductivityReminder © 2016 DGh0st</string>
-							</dict>
-						</array>
-					</dict>
-				</dict>
-				<dict>
-					<key>cell-class-name</key>
-					<string>ALDisclosureIndicatedCell</string>
-					<key>title</key>
-					<string>User Applications</string>
-					<key>predicate</key>
-					<string>(isSystemApplication = FALSE)</string>
-					<key>suppress-hidden-apps</key>
-					<string>1</string>
-					<key>icon-size</key>
-					<integer>29</integer>
-					<key>action</key>
-					<string>showPreferences</string>
-					<key>display-identifier-macro</key>
-					<string>@@DISPLAYIDENTIFIER@@</string>
-					<key>entry</key>
-					<dict>
-						<key>items</key>
-						<array>
-							<dict>
-								<key>cell</key>
-								<string>PSGroupCell</string>
-								<key>footerText</key>
-								<string>Set the amount of time (in minutes) after which alert is displayed. 0 means off.</string>
-							</dict>
-							<dict>
-								<key>cell</key>
-								<string>PSEditTextCell</string>
-								<key>defaults</key>
-								<string>com.dgh0st.productivityreminder</string>
-								<key>key</key>
-								<string>AlertDelay-@@DISPLAYIDENTIFIER@@</string>
-								<key>default</key>
-								<string>0</string>
-								<key>PostNotification</key>
-								<string>com.dgh0st.productivityreminder/settingschanged</string>
-							</dict>
-							<dict>
-								<key>cell</key>
-								<string>PSGroupCell</string>
-								<key>footerAlignment</key>
-								<integer>1</integer>
-								<key>footerText</key>
-								<string>ProductivityReminder © 2016 DGh0st</string>
-							</dict>
-						</array>
-					</dict>
-				</dict>
-			</array>
 		</dict>
 		<dict>
 			<key>cell</key>

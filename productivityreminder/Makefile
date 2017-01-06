@@ -1,7 +1,9 @@
+export GO_EASY_ON_ME = 1
+
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = ProductivityReminder
-ProductivityReminder_FILES = PRPrefsRootListController.m
+ProductivityReminder_FILES = PRPrefsRootListController.xm
 ProductivityReminder_INSTALL_PATH = /Library/PreferenceBundles
 ProductivityReminder_FRAMEWORKS = UIKit MessageUI
 ProductivityReminder_PRIVATE_FRAMEWORKS = Preferences
