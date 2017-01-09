@@ -68,7 +68,65 @@
 			<key>key</key>
 			<string>buttonMessage</string>
 			<key>default</key>
-			<string>Thanks for the suggestion</string>
+			<string>Thanks for the suggestion!</string>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>save</string>
+			<key>action</key>
+			<string>save</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Snooze Message</string>
+			<key>footerText</key>
+			<string>Enable Snooze button.
+Override the normal button with snooze button.
+Set the text to be displayed on snooze button, [min] will be replaced with the snooze time.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>isSnoozeEnabled</string>
+			<key>label</key>
+			<string>Enable Snooze Button</string>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>isOverrideEnabled</string>
+			<key>label</key>
+			<string>Override Regular Button</string>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>snoozeMessage</string>
+			<key>default</key>
+			<string>Snooze for [min].</string>
 			<key>PostNotification</key>
 			<string>com.dgh0st.productivityreminder/settingschanged</string>
 		</dict>

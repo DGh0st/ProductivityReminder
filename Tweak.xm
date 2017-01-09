@@ -8,6 +8,10 @@
 #define kButtonMessage @"buttonMessage"
 #define kAlertDelayPrefix @"AlertDelay-"
 #define kAppEnabledPrefix @"AppEnabled-"
+#define kAlertSnoozePrefix @"AlertSnooze-"
+#define kIsSnoozeEnabled @"isSnoozeEnabled"
+#define kIsOverrideEnabled @"isOverrideEnabled"
+#define kSnoozeMessage @"snoozeMessage"
 
 NSDictionary *prefs = nil;
 
@@ -69,6 +73,8 @@ static NSString *stringValueForKey(NSString *key, NSString *defaultValue) {
 
 %group applications
 BOOL shouldDisplayAlert = NO;
+NSInteger numberOfSnoozes = 0;
+UIAlertController *alert = nil;
 
 %hook UIViewController
 -(void)viewDidLoad {
@@ -81,6 +87,7 @@ BOOL shouldDisplayAlert = NO;
 -(void)startAlertTimer {
 	if (!shouldDisplayAlert) {
 		shouldDisplayAlert = YES;
+		numberOfSnoozes = 0;
 		[self performSelector:@selector(displayAlert) withObject:nil afterDelay:doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60];
 	}
 }
@@ -91,6 +98,8 @@ BOOL shouldDisplayAlert = NO;
 		shouldDisplayAlert = NO;
 		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(displayAlert) object:nil];
 	}
+	[alert dismissViewControllerAnimated:YES completion:nil];
+	alert = nil;
 }
 
 %new
@@ -101,8 +110,10 @@ BOOL shouldDisplayAlert = NO;
 		NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
 		NSString *alertMessage = stringValueForKey(kAlertMessage, @"You've been on [app] for [min]. Are you sure you couldn't be using your time better?");
 		NSString *buttonMessage = stringValueForKey(kButtonMessage, @"Thanks for the suggestion");
+		NSString *snoozeMessage = stringValueForKey(kSnoozeMessage, @"Snooze for [min].");
 
-		NSInteger timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60;
+		// replace [app] and [min] in alertMessage
+		NSInteger timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60 + doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertSnoozePrefix, 0.0f) * 60 * numberOfSnoozes;
 		NSString *time = @"";
 		if (timeInSeconds / 60 > 0) {
 			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
@@ -116,11 +127,36 @@ BOOL shouldDisplayAlert = NO;
 		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[app]" withString:appName];
 		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
 
-		UIAlertController *alert = [%c(UIAlertController) alertControllerWithTitle:alertMessage message:nil preferredStyle:UIAlertControllerStyleAlert];
+		// replace [min] in snoozeMessage
+		timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertSnoozePrefix, 0.0f) * 60;
+		time = @"";
+		if (timeInSeconds / 60 > 0) {
+			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
+			if (timeInSeconds % 60 > 0) {
+				time = [time stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
+			}
+		} else if (timeInSeconds % 60 > 0) {
+			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
+		}
+
+		snoozeMessage = [snoozeMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
+
+		// create alert
+		alert = [%c(UIAlertController) alertControllerWithTitle:alertMessage message:nil preferredStyle:UIAlertControllerStyleAlert];
 
 		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:buttonMessage style:UIAlertActionStyleCancel handler:nil];
+		UIAlertAction *snoozeAction = [UIAlertAction actionWithTitle:snoozeMessage style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+			numberOfSnoozes++;
+			shouldDisplayAlert = YES;
+			[self performSelector:@selector(displayAlert) withObject:nil afterDelay:timeInSeconds];
+		}];
 
-		[alert addAction:cancelAction];
+		if (boolValueForKey(kIsSnoozeEnabled, NO) && !boolValueForKey(kIsOverrideEnabled, NO)) {
+			[alert addAction:cancelAction];
+		}
+		if (boolValueForKey(kIsSnoozeEnabled, NO)) {
+			[alert addAction:snoozeAction];
+		}
 		[self presentViewController:alert animated:YES completion:nil];
 	}
 }

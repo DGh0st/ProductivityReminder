@@ -30,7 +30,7 @@
 			<key>label</key>
 			<string>Minutes</string>
 			<key>footerText</key>
-			<string>Set the amount of time after which alert is displayed</string>
+			<string>Set the amount of time after which alert is displayed.</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -41,6 +41,36 @@
 			<string>AlertDelay</string>
 			<key>default</key>
 			<string>10</string>
+			<key>isDecimalPad</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.dgh0st.productivityreminder/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>save</string>
+			<key>action</key>
+			<string>save</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Snooze Minutes</string>
+			<key>footerText</key>
+			<string>Set the amount of time for the snooze button.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>com.dgh0st.productivityreminder</string>
+			<key>key</key>
+			<string>AlertSnooze</string>
+			<key>default</key>
+			<string>3</string>
 			<key>isDecimalPad</key>
 			<true/>
 			<key>PostNotification</key>
