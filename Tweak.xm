@@ -151,7 +151,7 @@ UIAlertController *alert = nil;
 			[self performSelector:@selector(displayAlert) withObject:nil afterDelay:timeInSeconds];
 		}];
 
-		if (boolValueForKey(kIsSnoozeEnabled, NO) && !boolValueForKey(kIsOverrideEnabled, NO)) {
+		if (!boolValueForKey(kIsSnoozeEnabled, NO) || !boolValueForKey(kIsOverrideEnabled, NO)) {
 			[alert addAction:cancelAction];
 		}
 		if (boolValueForKey(kIsSnoozeEnabled, NO)) {
