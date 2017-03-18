@@ -123,39 +123,53 @@ UIAlertController *alert = nil;
 	if (shouldDisplayAlert) {
 		shouldDisplayAlert = NO;
 
-		NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+		NSString *appName = [[NSBundle bundleWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]] objectForInfoDictionaryKey:@"CFBundleExecutable"];
 		NSString *_alertMessage = [alertMessage copy];
 		NSString *_snoozeMessage = [snoozeMessage copy];
 		NSString *_buttonMessage = [buttonMessage copy];
 
+		// error checking
+		if (appName == nil) {
+			appName = @"";
+		}
+		if (_alertMessage == nil) {
+			_alertMessage = @"";
+		}
+		if (_snoozeMessage == nil) {
+			_snoozeMessage = @"";
+		}
+		if (_buttonMessage == nil) {
+			_buttonMessage = @"";
+		}
+
 		// replace [app] and [min] in _alertMessage
 		NSInteger timeInSeconds = perAppAlertDelay + perAppAlertSnooze * numberOfSnoozes;
-		NSString *time = @"";
+		NSString *_alertTime = @"";
 		if (timeInSeconds / 60 > 0) {
-			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
+			_alertTime = [_alertTime stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
 			if (timeInSeconds % 60 > 0) {
-				time = [time stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
+				_alertTime = [_alertTime stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
 			}
 		} else if (timeInSeconds % 60 > 0) {
-			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
+			_alertTime = [_alertTime stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
 		}
 
 		_alertMessage = [_alertMessage stringByReplacingOccurrencesOfString:@"[app]" withString:appName];
-		_alertMessage = [_alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
+		_alertMessage = [_alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:_alertTime];
 
 		// replace [min] in _snoozeMessage
 		timeInSeconds = perAppAlertSnooze;
-		time = @"";
+		NSString *_snoozeTime = @"";
 		if (timeInSeconds / 60 > 0) {
-			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
+			_snoozeTime = [_snoozeTime stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
 			if (timeInSeconds % 60 > 0) {
-				time = [time stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
+				_snoozeTime = [_snoozeTime stringByAppendingString:[NSString stringWithFormat:@" %zd seconds", timeInSeconds % 60]];
 			}
 		} else if (timeInSeconds % 60 > 0) {
-			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
+			_snoozeTime = [_snoozeTime stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
 		}
 
-		_snoozeMessage = [_snoozeMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
+		_snoozeMessage = [_snoozeMessage stringByReplacingOccurrencesOfString:@"[min]" withString:_snoozeTime];
 
 		// create alert
 		alert = [%c(UIAlertController) alertControllerWithTitle:_alertMessage message:nil preferredStyle:UIAlertControllerStyleAlert];
