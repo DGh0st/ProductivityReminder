@@ -3,15 +3,17 @@
 #define kIdentifier @"com.dgh0st.productivityreminder"
 #define kSettingsChangedNotification (CFStringRef)@"com.dgh0st.productivityreminder/settingschanged"
 #define kSettingsPath @"/var/mobile/Library/Preferences/com.dgh0st.productivityreminder.plist"
-#define kIsEnabled @"isEnabled"
-#define kAlertMessage @"alertMessage"
-#define kButtonMessage @"buttonMessage"
-#define kAlertDelayPrefix @"AlertDelay-"
-#define kAppEnabledPrefix @"AppEnabled-"
-#define kAlertSnoozePrefix @"AlertSnooze-"
-#define kIsSnoozeEnabled @"isSnoozeEnabled"
-#define kIsOverrideEnabled @"isOverrideEnabled"
-#define kSnoozeMessage @"snoozeMessage"
+
+static BOOL isEnabled = YES;
+static NSString *alertMessage = @"You've been on [app] for [min]. Are you sure you couldn't be using your time better?";
+static NSString *buttonMessage = @"Thanks for the suggestion!";
+static BOOL isSnoozeEnabled = NO;
+static BOOL isOverrideEnabled = NO;
+static NSString *snoozeMessage = @"Snooze for [min].";
+BOOL perAppEnabled = NO;
+CGFloat perAppAlertDelay = 600;
+CGFloat perAppAlertSnooze = 180;
+
 
 NSDictionary *prefs = nil;
 
@@ -28,11 +30,6 @@ static void reloadPrefs() {
 	} else {
 		prefs = [NSDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	}
-}
-
-static void preferencesChanged() {
-	CFPreferencesAppSynchronize((CFStringRef)kIdentifier);
-	reloadPrefs();
 }
 
 static BOOL boolValueForKey(NSString *key, BOOL defaultValue) {
@@ -71,6 +68,21 @@ static NSString *stringValueForKey(NSString *key, NSString *defaultValue) {
 	return (prefs && [prefs objectForKey:key]) ? [prefs objectForKey:key] : defaultValue;
 }
 
+static void preferencesChanged() {
+	CFPreferencesAppSynchronize((CFStringRef)kIdentifier);
+	reloadPrefs();
+
+	isEnabled = boolValueForKey(@"isEnabled", YES);
+	alertMessage = stringValueForKey(@"alertMessage", @"You've been on [app] for [min]. Are you sure you couldn't be using your time better?");
+	buttonMessage = stringValueForKey(@"buttonMessage", @"Thanks for the suggestion!");
+	isSnoozeEnabled = boolValueForKey(@"isSnoozeEnabled", NO);
+	isOverrideEnabled = boolValueForKey(@"isOverrideEnabled", NO);
+	snoozeMessage = stringValueForKey(@"snoozeMessage", @"Snooze for [min].");
+	perAppEnabled = boolValuePerApp([[NSBundle mainBundle] bundleIdentifier], @"AppEnabled-", NO);
+	perAppAlertDelay = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], @"AlertDelay-", 0.0f) * 60;
+	perAppAlertSnooze = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], @"AlertSnooze-", 0.0f) * 60;
+}
+
 %group applications
 BOOL shouldDisplayAlert = NO;
 NSInteger numberOfSnoozes = 0;
@@ -79,8 +91,10 @@ UIAlertController *alert = nil;
 %hook UIViewController
 -(void)viewDidLoad {
 	%orig;
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startAlertTimer) name:UIApplicationDidBecomeActiveNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopAlertTimer) name:UIApplicationWillResignActiveNotification object:nil];
+	if (perAppEnabled) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startAlertTimer) name:UIApplicationDidBecomeActiveNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopAlertTimer) name:UIApplicationWillResignActiveNotification object:nil];
+	}
 }
 
 %new
@@ -88,7 +102,7 @@ UIAlertController *alert = nil;
 	if (!shouldDisplayAlert) {
 		shouldDisplayAlert = YES;
 		numberOfSnoozes = 0;
-		[self performSelector:@selector(displayAlert) withObject:nil afterDelay:doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60];
+		[self performSelector:@selector(displayAlert) withObject:nil afterDelay:perAppAlertDelay];
 	}
 }
 
@@ -98,8 +112,10 @@ UIAlertController *alert = nil;
 		shouldDisplayAlert = NO;
 		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(displayAlert) object:nil];
 	}
-	[alert dismissViewControllerAnimated:YES completion:nil];
-	alert = nil;
+	if (alert != nil) {
+		[alert dismissViewControllerAnimated:NO completion:nil];
+		alert = nil;
+	}
 }
 
 %new
@@ -108,12 +124,12 @@ UIAlertController *alert = nil;
 		shouldDisplayAlert = NO;
 
 		NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
-		NSString *alertMessage = stringValueForKey(kAlertMessage, @"You've been on [app] for [min]. Are you sure you couldn't be using your time better?");
-		NSString *buttonMessage = stringValueForKey(kButtonMessage, @"Thanks for the suggestion");
-		NSString *snoozeMessage = stringValueForKey(kSnoozeMessage, @"Snooze for [min].");
+		NSString *_alertMessage = [alertMessage copy];
+		NSString *_snoozeMessage = [snoozeMessage copy];
+		NSString *_buttonMessage = [buttonMessage copy];
 
-		// replace [app] and [min] in alertMessage
-		NSInteger timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertDelayPrefix, 0.0f) * 60 + doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertSnoozePrefix, 0.0f) * 60 * numberOfSnoozes;
+		// replace [app] and [min] in _alertMessage
+		NSInteger timeInSeconds = perAppAlertDelay + perAppAlertSnooze * numberOfSnoozes;
 		NSString *time = @"";
 		if (timeInSeconds / 60 > 0) {
 			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
@@ -124,11 +140,11 @@ UIAlertController *alert = nil;
 			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
 		}
 
-		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[app]" withString:appName];
-		alertMessage = [alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
+		_alertMessage = [_alertMessage stringByReplacingOccurrencesOfString:@"[app]" withString:appName];
+		_alertMessage = [_alertMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
 
-		// replace [min] in snoozeMessage
-		timeInSeconds = doubleValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAlertSnoozePrefix, 0.0f) * 60;
+		// replace [min] in _snoozeMessage
+		timeInSeconds = perAppAlertSnooze;
 		time = @"";
 		if (timeInSeconds / 60 > 0) {
 			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd minutes", timeInSeconds / 60]];
@@ -139,22 +155,25 @@ UIAlertController *alert = nil;
 			time = [time stringByAppendingString:[NSString stringWithFormat:@"%zd seconds", timeInSeconds % 60]];
 		}
 
-		snoozeMessage = [snoozeMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
+		_snoozeMessage = [_snoozeMessage stringByReplacingOccurrencesOfString:@"[min]" withString:time];
 
 		// create alert
-		alert = [%c(UIAlertController) alertControllerWithTitle:alertMessage message:nil preferredStyle:UIAlertControllerStyleAlert];
+		alert = [%c(UIAlertController) alertControllerWithTitle:_alertMessage message:nil preferredStyle:UIAlertControllerStyleAlert];
 
-		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:buttonMessage style:UIAlertActionStyleCancel handler:nil];
-		UIAlertAction *snoozeAction = [UIAlertAction actionWithTitle:snoozeMessage style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:_buttonMessage style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+			alert = nil;
+		}];
+		UIAlertAction *snoozeAction = [UIAlertAction actionWithTitle:_snoozeMessage style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 			numberOfSnoozes++;
 			shouldDisplayAlert = YES;
 			[self performSelector:@selector(displayAlert) withObject:nil afterDelay:timeInSeconds];
+			alert = nil;
 		}];
 
-		if (!boolValueForKey(kIsSnoozeEnabled, NO) || !boolValueForKey(kIsOverrideEnabled, NO)) {
+		if (!isSnoozeEnabled || !isOverrideEnabled) {
 			[alert addAction:cancelAction];
 		}
-		if (boolValueForKey(kIsSnoozeEnabled, NO)) {
+		if (isSnoozeEnabled) {
 			[alert addAction:snoozeAction];
 		}
 		[self presentViewController:alert animated:YES completion:nil];
@@ -167,14 +186,12 @@ UIAlertController *alert = nil;
 	preferencesChanged();
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)preferencesChanged, kSettingsChangedNotification, NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 
-	if (boolValueForKey(kIsEnabled, true)) {
+	if (isEnabled) {
 		NSArray *args = [[NSClassFromString(@"NSProcessInfo") processInfo] arguments];
 		if (args.count != 0) {
 			NSString *execPath = args[0];
 			if (execPath && [execPath rangeOfString:@"/Application"].location != NSNotFound) {
-				if (boolValuePerApp([[NSBundle mainBundle] bundleIdentifier], kAppEnabledPrefix, NO)) {
-					%init(applications);
-				}
+				%init(applications);
 			}
 		}
 	}
