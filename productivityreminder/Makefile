@@ -1,5 +1,3 @@
-export GO_EASY_ON_ME = 1
-
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = ProductivityReminder
